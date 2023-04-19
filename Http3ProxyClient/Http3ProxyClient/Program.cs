@@ -1,7 +1,7 @@
 ﻿using System.Net;
 
 HttpClient client = new HttpClient();
-client.DefaultRequestVersion = HttpVersion.Version30;
+client.DefaultRequestVersion = HttpVersion.Version20;
 client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionExact;
 
 var response = await client.GetAsync("https://localhost:7192/");
