@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel((context, options) =>
 {
-    options.Listen(IPAddress.Parse("127.0.0.1"), 7192, listenOptions =>
+    options.Listen(IPAddress.Any, 7192, listenOptions =>
     {
         // Use HTTP/3
         listenOptions.Protocols = HttpProtocols.Http3;
