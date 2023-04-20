@@ -1,15 +1,17 @@
 using System.Net;
+using Http3ProxyServer;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddRazorPages();
 
 builder.WebHost.ConfigureKestrel((context, options) =>
 {
     options.Listen(IPAddress.Any, 7192, listenOptions =>
     {
-        // Use HTTP/3
-        listenOptions.Protocols = HttpProtocols.Http2; // TODO: change to Http3 if on a platform that supports it
+        // Limit connections to HTTP/3
+        listenOptions.Protocols = HttpProtocols.Http3; 
         listenOptions.UseHttps();
     });
 }
@@ -17,9 +19,19 @@ builder.WebHost.ConfigureKestrel((context, options) =>
 
 var app = builder.Build();
 
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthorization();
+app.MapRazorPages();
+
+app.UseMiddleware<ReverseProxyMiddleware>();
+
 app.MapGet("/", async httpContext =>
 {
-    await httpContext.Response.WriteAsync("HTT2 Test!");
+    await httpContext.Response.WriteAsync("HTTP3 Test!");
 });
 
-app.Run();
+app.Run();  // Throws an error!
+            // "Platform doesn't support QUIC or HTTP/3."
+            // Windows 10 does not have MSQuic support
